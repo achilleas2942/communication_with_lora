@@ -15,9 +15,10 @@ class LoRaServer(Node):
         self.subscription = self.create_subscription(
             String, 'lora_received_data', self.receive_from_LoRa, 10)
         self.subscription
+        self.counter = 0
 
         # Initialize serial communication
-        self.serial_port = '/dev/ttyUSB0'  # Update to match the Arduino's serial port
+        self.serial_port = '/dev/ttyUSB1'  # Update to match the Arduino's serial port
         self.baud_rate = 115200  # Update to match the Arduino's baud rate
         self.ser = serial.Serial(self.serial_port, self.baud_rate)
 
@@ -36,9 +37,11 @@ class LoRaServer(Node):
                     f'Received data from serial port: {received_data}')
 
                 # Publish the received data to the "lora_received_data" topic
-                lora_data = String()
-                lora_data.data = received_data
-                self.publisher.publish(lora_data)
+                if received_data == "testing":  # Change with the string you expect to receive
+                    lora_data = String()
+                    self.counter = self.counter + 1
+                    lora_data.data = received_data + str(self.counter)
+                    self.publisher.publish(lora_data)
 
 
 def main(args=None):
